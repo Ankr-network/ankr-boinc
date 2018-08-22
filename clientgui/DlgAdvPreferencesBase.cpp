@@ -37,6 +37,10 @@
 #define STATICBOXVERTICALSPACER 10
 #define DAYOFWEEKBORDERSIZE 10
 
+#ifndef wxNB_FLAT
+#define wxNB_FLAT 0x0800
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 
 // NOTE: On MS Windows with wxWidgets 3.0, controls inside a wxStaticBox 
