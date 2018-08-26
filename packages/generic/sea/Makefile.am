@@ -38,7 +38,7 @@ BOINC/boincmgr: $(top_builddir)/stage/$(bindir)/boincmgr BOINC
 	cp $(top_builddir)/stage/$(bindir)/boincmgr BOINC/boincmgr
 
 #BOINC/boincscr: $(top_builddir)/stage/$(bindir)/boincscr BOINC
-	cp $(top_builddir)/stage/$(bindir)/boincscr BOINC/boincscr
+#	cp $(top_builddir)/stage/$(bindir)/boincscr BOINC/boincscr
 
 BOINC/boinccmd: $(top_builddir)/stage/$(bindir)/boinccmd BOINC
 	cp $(top_builddir)/stage/$(bindir)/boinccmd BOINC/boinccmd
