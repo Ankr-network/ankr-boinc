@@ -377,6 +377,8 @@ struct HOST {
     double client_start_time;
     double previous_uptime;
 
+    // If host supports SGX, sgx_status = 1 or 0
+    int sgx_status;
 
     int parse(XML_PARSER&);
     int parse_time_stats(XML_PARSER&);

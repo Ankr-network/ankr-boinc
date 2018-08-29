@@ -1427,6 +1427,9 @@ int HOST::parse(XML_PARSER& xp) {
         if (xp.parse_string("cache_l2", stemp)) continue;
         if (xp.parse_string("cache_l3", stemp)) continue;
 #endif
+       
+        // check sgx_status  
+        if (xp.parse_int("sgx_status", sgx_status)) continue;
 
         log_messages.printf(MSG_NORMAL,
             "HOST::parse(): unrecognized: %s\n", xp.parsed_tag

@@ -563,6 +563,8 @@ static int modify_host_struct(HOST& host) {
     } else {
         host.nsame_ip_addr++;
     }
+     
+    host.sgx_status = g_request->host.sgx_status;
     host.on_frac = g_request->host.on_frac;
     host.connected_frac = g_request->host.connected_frac;
     host.active_frac = g_request->host.active_frac;

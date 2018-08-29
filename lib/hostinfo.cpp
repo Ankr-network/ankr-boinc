@@ -205,7 +205,8 @@ int HOST_INFO::write(
         "    <os_name>%s</os_name>\n"
         "    <os_version>%s</os_version>\n"
         "    <n_usable_coprocs>%d</n_usable_coprocs>\n"
-        "    <wsl_available>%d</wsl_available>\n",
+        "    <wsl_available>%d</wsl_available>\n"
+        "    <sgx_status>%d</sgx_status>\n",
         host_cpid,
         p_ncpus,
         pv,

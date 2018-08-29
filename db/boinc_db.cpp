@@ -558,7 +558,7 @@ void DB_HOST::db_print(char* buf){
         "error_rate=%.15e, "
         "product_name='%s', "
         "gpu_active_frac=%.15e, "
-        "p_ngpus=%d, p_gpu_fpops=%.15e ",
+        "p_ngpus=%d, p_gpu_fpops=%.15e, sgx_status=%d",
         create_time, userid,
         rpc_seqno, rpc_time,
         total_credit, expavg_credit, expavg_time,
@@ -581,7 +581,7 @@ void DB_HOST::db_print(char* buf){
         _error_rate,
         product_name,
         gpu_active_frac,
-        p_ngpus, p_gpu_fpops
+        p_ngpus, p_gpu_fpops, sgx_status
     );
     UNESCAPE(domain_name);
     UNESCAPE(serialnum);
