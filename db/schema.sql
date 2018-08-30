@@ -213,6 +213,7 @@ create table host (
     gpu_active_frac         double          not null,
     p_ngpus                 integer         not null,
     p_gpu_fpops             double          not null,
+    sgx_status              integer         not null default -1,
 
     primary key (id)
 ) engine=InnoDB;
