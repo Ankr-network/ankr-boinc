@@ -1419,6 +1419,8 @@ int HOST::parse(XML_PARSER& xp) {
         if (xp.parse_string("p_capabilities", stemp)) continue;
         if (xp.parse_string("accelerators", stemp)) continue;
 
+        if (xp.parse_int("wsl_available", wsl_available)) continue;
+
 #if 1
         // deprecated items
         //
