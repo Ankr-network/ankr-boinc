@@ -386,6 +386,7 @@ struct HOST {
     void fix_nans();
     void clear();
     bool get_opencl_cpu_prop(const char* platform, OPENCL_CPU_PROP&);
+    int wsl_available;
 };
 
 struct HOST_DELETED {
