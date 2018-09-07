@@ -962,15 +962,31 @@ function run_xadd(){
      exec($cmd, $result);
 }
 
-
+/*
+* php-zip extension need.
+* for ubuntu apache2
+* sudo apt-get install php7.0-zip
+* sudo service apache2 restart
+* for windows
+* enable php_zip.dll inside of php.ini
+*/
 function load_app_file_to_apps($path){
     $target_dir = "../../$path/";
     $base_name = basename($_FILES["file"]["name"]);
     $target_file = $target_dir . $base_name;
     $fileTmpName  = $_FILES['file']['tmp_name'];
     move_uploaded_file($fileTmpName, $target_file);
-    $cmd = "cd $target_dir; unzip -o  $base_name; rm -f  $base_name";
-    exec($cmd, $result);
+    // unzip zip file and delete file
+    $zip = new ZipArchive;
+    $result = $zip->open($target_file);
+    if($result == true) {
+        $result = $zip->extractTo($target_dir);
+        $zip ->close();
+    }
+    if($result == false){
+        xml_error(-1, "extract zip file failed");
+    }
+    unlink($target_file);
 }
 
 function run_update_versions(){
@@ -1120,8 +1136,6 @@ function add_app($r) {
         update_database_for_sgx_enable( $version_record->appid,  $version_record->id);
      }
 
-     $app = get_submit_app((string)($r->app_name));
-     list($user, $user_submit) = authenticate_user($r, $app);
      if (!isset($version_record->id)) {
          xml_error(-1, "Can't create version: ".BoincDb::error());
      }
