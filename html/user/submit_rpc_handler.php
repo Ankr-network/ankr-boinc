@@ -459,7 +459,7 @@ function submit_batch($r) {
         }
         $batch = BoincBatch::lookup_id($batch_id);
     }
-    
+
     $job_params = new StdClass;
     $job_params->rsc_disk_bound = (double) $r->batch->job_params->rsc_disk_bound;
     $job_params->rsc_fpops_est = (double) $r->batch->job_params->rsc_fpops_est;
@@ -471,7 +471,7 @@ function submit_batch($r) {
     $input_template_filename = (string) $r->batch->input_template_filename;
     $output_template_filename = (string) $r->batch->output_template_filename;
         // possibly empty
-    
+
     submit_jobs(
         $jobs, $job_params, $app, $batch_id, $let, $app_version_num,
         $input_template_filename,
@@ -906,6 +906,234 @@ function get_templates($r) {
     ";
 }
 
+
+// add for add app
+function check_app_exit($app_name){
+    $app_name = BoincDb::escape_string($app_name);
+    $app = BoincApp::lookup("name='$app_name'");
+    if (!$app) return false;
+    else return true;
+}
+
+function check_platform_exit($name) {
+    $name = BoincDb::escape_string($name);
+    $platform = BoincPlatform::lookup("name='$name'");
+    if (!$platform) return false;
+    else return true;
+}
+
+
+function check_version_exit($app_name, $platform, $version) {
+    $version_record = get_application_version($app_name, $platform, $version);
+    if (!$version_record) return false;
+    else return true;
+}
+
+
+
+
+function update_project_xml_file($app_name, $platform){
+    $x = simplexml_load_file("../../project.xml");
+    if(check_platform_exit($platform) == false){
+        $pos = count($x->platform);
+        $x->platform[$pos]->name = $platform;
+        $x->platform[$pos]->user_friendly_name = $platform;
+    }
+
+    if(check_app_exit($platform) == false){
+        $pos = count($x->app);
+        $x->app[$pos]->name = $app_name;
+        $x->app[$pos]->user_friendly_name = $app_name;
+    }
+
+     save_pretty_xml($x->asXML(), "../../project.xml");
+}
+
+function save_pretty_xml($content, $file_name){
+    $dom = new DOMDocument("1.0");
+    $dom->preserveWhiteSpace = false;
+    $dom->formatOutput = true;
+    $dom->loadXML($content);
+    $dom->save($file_name);
+}
+
+function run_xadd(){
+     $cmd = "cd " . project_dir() . "; ./bin/xadd";
+     exec($cmd, $result);
+}
+
+
+function load_app_file_to_apps($path){
+    $target_dir = "../../$path/";
+    $base_name = basename($_FILES["file"]["name"]);
+    $target_file = $target_dir . $base_name;
+    $fileTmpName  = $_FILES['file']['tmp_name'];
+    move_uploaded_file($fileTmpName, $target_file);
+    $cmd = "cd $target_dir; unzip -o  $base_name; rm -f  $base_name";
+    exec($cmd, $result);
+}
+
+function run_update_versions(){
+    $cmd = "cd " . project_dir() . "; ./bin/update_versions2";
+    exec($cmd, $result);
+}
+
+// add daemon  validator and assimilator
+function upload_config_xml($app_name){
+    $x = simplexml_load_file("../../config.xml");
+
+    $find_app_name = false;
+    foreach($x->daemons->daemon as $v){
+    $pos = strpos($v->cmd, "sample_bitwise_validator");
+        if($pos !== false){
+             if(strpos($v->cmd, $app_name) !== false){
+                 $find_app_name = true;
+             }
+         }
+   }
+
+  if($find_app_name == false){
+    // update config xml
+    $index = count($x->daemons->daemon);
+    $x->daemons->daemon[$index]->cmd = "sample_bitwise_validator -d 3 --app $app_name";
+    $index++;
+    $x->daemons->daemon[$index]->cmd = "sample_assimilator -d 3 --app $app_name";
+
+    save_pretty_xml($x->asXML(), "../../config.xml");
+
+    $cmd = "cd " . project_dir() . "; ./bin/stop; nohup ./bin/start; & ";
+    popen($cmd, "w");
+  }
+}
+
+
+function get_application_version($app_name, $platform, $version)
+{
+    $app_name = BoincDb::escape_string($app_name);
+    $platform = BoincDb::escape_string($platform);
+    $version = BoincDb::escape_string($version);
+
+    $version = parse_version($version);
+
+    $app = BoincApp::lookup("name='$app_name'");
+    $platform = BoincPlatform::lookup("name='$platform'");
+
+    $where = "appid = {$app->id}  and platformid = {$platform->id} and version_num = {$version} ";
+    $version = BoincAppVersion::lookup($where);
+    return $version;
+}
+
+// copy from update_version
+function parse_version($v) {
+    $x = explode(".", $v);
+    if (!is_numeric($x[0])) return -1;
+    if (sizeof($x) > 1) {
+        if (!is_numeric($x[1])) return -1;
+        return $x[1] + 100*$x[0];
+    }
+    return (int)$x[0];
+}
+
+/*
+*  plan_class_spec.xml
+*
+* <plan_classes>
+*   <plan_class>
+*    <name>sgx_enable</name>
+*    <cpu_feature>sgx</cpu_feature>
+*   </plan_class>
+* </plan_classes>
+*/
+function update_database_for_sgx_enable($app_id, $version_id){
+
+    $app = BoincApp::lookup_id($app_id);
+    $app->update("homogeneous_app_version = 1");
+
+    $version = BoincAppVersion::lookup_id($version_id);
+     //plan class related to plan_class_spec.xml file
+    $version->update("plan_class = 'sgx_enable'");
+
+}
+
+
+function add_app($r) {
+    xml_start_tag("create_app");
+    $app_name = (string)($r->app_name);
+    $version = (string)($r->version);
+    $platform = (string)($r->platform);
+    $sgx_enable = $r->sgx_enable;
+
+    if(empty($app_name)){
+        xml_error(-1, "app_name missing");
+    }
+
+    if(empty($version)){
+        xml_error(-1, "version missing");
+    }
+
+    if(empty($platform)){
+        xml_error(-1, "platform missing");
+    }
+
+    if(empty($sgx_enable)){
+        xml_error(-1, "sgx_enable missing");
+    }
+
+    if(empty($_FILES['file'])){
+       xml_error(-1, "zip file missing");
+    }
+
+    $filename = $_FILES['file']['name'];
+    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+    if($ext != "zip"){
+        xml_error(-1, "it is not a zip file");
+    }
+
+    authenticate_user($r, $app_name);
+
+    //check app exit, if not create app in database
+    if(check_app_exit($app_name) == false || check_platform_exit($platform) == false){
+       update_project_xml_file($app_name, $platform);
+       run_xadd();
+    }
+
+    // check app version
+    if(check_version_exit($app_name, $platform, $version) == true){
+        xml_error(-1, "version already exist, can not repeat submit");
+    }
+
+     // create new version
+     $path = "apps/$app_name/$version/$platform";
+     $cmd = "cd " . project_dir() . "; mkdir -p {$path}";
+     exec($cmd, $result);
+
+     load_app_file_to_apps($path);
+     run_update_versions();
+
+     // update config.xml restart daemons
+     upload_config_xml($app_name);
+
+     $version_record = get_application_version($app_name, $platform, $version);
+
+    // when sgx_eable = 1 : update app set  homogeneous_app_version = 1 and  update appversion set plan_class with special plan
+     if($sgx_enable && !empty($version_record)){
+        update_database_for_sgx_enable( $version_record->appid,  $version_record->id);
+     }
+
+     $app = get_submit_app((string)($r->app_name));
+     list($user, $user_submit) = authenticate_user($r, $app);
+     if (!isset($version_record->id)) {
+         xml_error(-1, "Can't create version: ".BoincDb::error());
+     }
+
+     echo "<version_id>$version_record->id</version_id>
+</create_app>
+    ";
+}
+
+
+// end of add app
+
 function ping($r) {
     xml_start_tag("ping");
     BoincDb::get();     // errors out if DB down or web disabled
@@ -1008,6 +1236,7 @@ switch ($r->getName()) {
     case 'retire_batch': handle_retire_batch($r); break;
     case 'set_expire_time': handle_set_expire_time($r); break;
     case 'submit_batch': submit_batch($r); break;
+    case 'add_app': add_app($r); break;
     default: xml_error(-1, "bad command: ".$r->getName());
 }
 
