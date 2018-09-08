@@ -1054,7 +1054,7 @@ static void get_cpu_info_haiku(HOST_INFO& host) {
         stepping);
 
     static const char *kFeatures[32] = {
-        "FPUU", "vme", "de", "pse",
+        "fpu", "vme", "de", "pse",
         "tsc", "msr", "pae", "mce",
         "cx8", "apic", NULL, "sep",
         "mtrr", "pge", "mca", "cmov",
