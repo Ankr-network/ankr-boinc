@@ -24,6 +24,114 @@
 #include "cpp.h"
 #include "config.h"
 
+#ifdef _WIN32
+# include <Windows.h>
+#else
+# include <dlfcn.h>
+#endif
+#include "config.h"
+#include <sgx_urts.h>
+#include <sgx_capable.h>
+
+#ifndef NULL
+#define NULL 0
+#endif
+
+#define SGX_SUPPORT_UNKNOWN			0x00000000
+#define SGX_SUPPORT_NO				0x80000000
+#define SGX_SUPPORT_YES				0x00000001
+#define SGX_SUPPORT_ENABLED			0x00000002
+#define SGX_SUPPORT_REBOOT_REQUIRED	0x00000004
+#define SGX_SUPPORT_ENABLE_REQUIRED	0x00000008
+
+int sgx_support = SGX_SUPPORT_UNKNOWN;
+static int l_libsgx_uae_service= 0;
+static void *h_libsgx_uae_service= NULL;
+static int l_libsgx_urts= 0;
+static void *h_libsgx_urts= NULL;
+
+static void *_load_libsgx_urts()
+{
+	if ( l_libsgx_urts == 0 ) {
+#ifdef _WIN32
+		h_libsgx_urts= LoadLibrary("libsgx_urts.dll");
+#else
+		h_libsgx_urts= dlopen("libsgx_urts.so", RTLD_GLOBAL|RTLD_NOW);
+#endif
+		l_libsgx_urts= ( h_libsgx_urts == NULL ) ? -1 : 1;
+	}
+
+	return h_libsgx_urts;
+}
+
+static void *_load_libsgx_uae_service()
+{
+	if ( l_libsgx_uae_service == 0 ) {
+#ifdef _WIN32
+		h_libsgx_uae_service= LoadLibrary("libsgx_uae_service.dll");
+#else
+		h_libsgx_uae_service= dlopen("libsgx_uae_service.so", RTLD_GLOBAL|RTLD_NOW);
+#endif
+		l_libsgx_uae_service= ( h_libsgx_uae_service == NULL ) ? -1 : 1;
+	}
+
+	return h_libsgx_uae_service;
+}
+
+int have_sgx_psw()
+{
+	return ( 
+		_load_libsgx_uae_service() == NULL ||
+		_load_libsgx_urts() == NULL 
+	) ? 0 : 1;
+}
+
+int get_sgx_support()
+{
+#ifdef SGX_HW_SIM
+    //return SGX_SUPPORT_YES|SGX_SUPPORT_ENABLED;
+    return SGX_SUPPORT_NO;
+#else
+    sgx_device_status_t sgx_device_status;
+
+    if (sgx_support != SGX_SUPPORT_UNKNOWN) return sgx_support;
+
+    sgx_support = SGX_SUPPORT_NO;
+
+    /* Check for the PSW */
+
+    if (! have_sgx_psw()) return sgx_support;
+
+    sgx_support = SGX_SUPPORT_YES;
+
+    /* Try to enable SGX */
+
+    if (sgx_cap_get_status(&sgx_device_status) != SGX_SUCCESS)
+        return sgx_support;
+
+    /* If SGX isn't enabled yet, perform the software opt-in/enable. */
+
+    if (sgx_device_status != SGX_ENABLED) {
+        switch (sgx_device_status) {
+        case SGX_DISABLED_REBOOT_REQUIRED:
+            /* A reboot is required. */
+            sgx_support |= SGX_SUPPORT_REBOOT_REQUIRED;
+            break;
+        case SGX_DISABLED_LEGACY_OS:
+            /* BIOS enabling is required */
+            sgx_support |= SGX_SUPPORT_ENABLE_REQUIRED;
+            break;
+        }
+
+        return sgx_support;
+    }
+
+    sgx_support |= SGX_SUPPORT_ENABLED;
+
+    return sgx_support;
+#endif
+}
+
 #if !defined(_WIN32) || defined(__CYGWIN32__)
 
 // Access to binary files in /proc filesystem doesn't work in the 64bit
@@ -710,8 +818,9 @@ static void parse_cpuinfo_linux(HOST_INFO& host) {
 #endif
     if (strlen(features)) {
         safe_strcpy(host.p_features, features);
+        safe_strcat(host.p_features, (get_sgx_support() & SGX_SUPPORT_ENABLED) ? " sgx":" non-sgx");
     }
-
+    
     safe_strcpy(host.p_model, model_buf);
     fclose(f);
 }
@@ -945,7 +1054,7 @@ static void get_cpu_info_haiku(HOST_INFO& host) {
         stepping);
 
     static const char *kFeatures[32] = {
-        "fpu", "vme", "de", "pse",
+        "FPUU", "vme", "de", "pse",
         "tsc", "msr", "pae", "mce",
         "cx8", "apic", NULL, "sep",
         "mtrr", "pge", "mca", "cmov",
