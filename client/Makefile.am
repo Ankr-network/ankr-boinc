@@ -93,8 +93,8 @@ boinc_client_SOURCES = \
 
 boinc_client_DEPENDENCIES = $(LIBBOINC)
 boinc_client_CPPFLAGS = $(AM_CPPFLAGS)
-boinc_client_CXXFLAGS = $(AM_CXXFLAGS) $(SSL_CXXFLAGS)
-boinc_client_LDFLAGS = $(AM_LDFLAGS) $(SSL_LDFLAGS) -L$(top_srcdir)/lib
+boinc_client_CXXFLAGS = $(AM_CXXFLAGS) $(SSL_CXXFLAGS) -I/opt/intel/sgxsdk/include
+boinc_client_LDFLAGS = $(AM_LDFLAGS) $(SSL_LDFLAGS) -L$(top_srcdir)/lib -L/opt/intel/sgxsdk/lib64 -lsgx_urts -lsgx_uae_service -lsgx_capable
 if OS_WIN32
 boinc_client_CXXFLAGS += -I$(top_srcdir)/coprocs/NVIDIA/include
 boinc_client_SOURCES += hostinfo_win.cpp \
