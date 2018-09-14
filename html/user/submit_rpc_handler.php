@@ -1132,7 +1132,7 @@ function add_app($r) {
      $version_record = get_application_version($app_name, $platform, $version);
 
     // when sgx_eable = 1 : update app set  homogeneous_app_version = 1 and  update appversion set plan_class with special plan
-     if($sgx_enable && !empty($version_record)){
+     if($sgx_enable == 1 && !empty($version_record)){
         update_database_for_sgx_enable( $version_record->appid,  $version_record->id);
      }
 

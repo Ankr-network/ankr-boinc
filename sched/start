@@ -154,6 +154,13 @@ def get_task_command_basename(task):
     x = task.cmd.split()[0]
     if x == 'run_in_ops':
         x = task.cmd.split()[1]
+
+    pos = task.cmd.find('app')
+    if pos > 0 :
+        appstr = task.cmd[pos:]
+        app = appstr.split()[1]
+        print(os.path.basename(x)+"_"+app)
+        return os.path.basename(x)+"_"+app
     return os.path.basename(x)
 
 def get_task_output_name(task):
@@ -480,7 +487,7 @@ def run_tasks():
             continue
         if task.disabled:
             continue
-        if task.always_run: 
+        if task.always_run:
             run_task(task)
             continue
         if run_state.enabled:
