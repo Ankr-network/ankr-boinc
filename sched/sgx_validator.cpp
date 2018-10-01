@@ -38,9 +38,13 @@
 using std::string;
 using std::vector;
 
+int sgx_boinc_sp_call_remote_attestation(char* spid, char* signing_cafile,  char* ias_cert, char *ias_cert_key, char* b64quote, char verbose_flag); // in static library
+
 int sgx_remote_check(string file_path);
 
 bool is_gzip = false;
+int run_argc = 0;
+char** run_argv = NULL;
     // if true, files are gzipped; skip header when comparing
 
 struct FILE_CKSUM_LIST {
@@ -68,11 +72,8 @@ void validate_handler_usage() {
 
 
 bool files_match(FILE_CKSUM_LIST& f1, FILE_CKSUM_LIST& f2) {
-    if (f1.files.size() != f2.files.size()) return false;
-    for (unsigned int i=0; i<f1.files.size(); i++) {
-        if (f1.files[i] != f2.files[i]) return false;
-    }
-    return true;
+    
+    return false;
 }
 
 int init_result(RESULT& result, void*& data) {
@@ -93,6 +94,7 @@ int init_result(RESULT& result, void*& data) {
     }
 
     if(files.size() == 0) return 1; // no output file, validataion failed anyway
+ //   return 1;
     if(sgx_remote_check(files[0].path.c_str()) != 0) return 1; // sgx check error, validation failed anyway 
 
     for (unsigned int i=0; i<files.size(); i++) {
@@ -118,8 +120,43 @@ int init_result(RESULT& result, void*& data) {
 }
 
 int sgx_remote_check(string file_path){
+    char b64quote[2000];
+    FILE* fp = fopen(file_path.c_str(), "r");
+    fgets(b64quote, sizeof(b64quote), fp);
+    fclose(fp);
+    if(strlen(b64quote) <  1488) {
+      printf("\n--------------- error quote length is %d which 1488 is expected \n", strlen(b64quote));
+      return 1;
+     }else{
+       printf("\n---------quote length is %d which 1488 is expected \n", strlen(b64quote));
+     }
+
+
+    b64quote[1488]=0;
+    //puts(b64quote);
+    
+      char* b64quote2= "AgAAAPoKAAAHAAYAAAAAADQVojnDto72bq2YsaLQHirmCGrHHUmt08LRyclZLFf4BQX///8CAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAHAAAAAAAAANS16kwG2tk/a775pT+YR9M1jfxd7JqjZ6CsEnnxTndXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC9ccY4Dvd8VBfostHOLUtlBLn0GOUEk0JEDP/yRD2VvQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABW9NIXvpRCgapTzL9gPMPLuYxzsRSEUILnCewQjBGaOQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAqAIAAJqZc9uf1h8OXxrqr5PowV75nnZwscUgFZzLf9B3mUADpGICH2nYuXk3zd2TzKoSe6/XPRoKMQJh1YZ5n4tdNLPlJeKJwNz7l4CB/xvqdFFs03lqtgdc+eHTqvBjYmPX1XPhaVoxi2U3YoAYUPVp0hP+F1/pHiG8ItXnqKbkgpgRS5nCRCFfGE8M/ASHoJaY8PyHGBj6mqbbDTkEyRpAvSDcEntBcs5wOaWt/oTeQsg5yRdBg09v9hS1TNdfQnpUnsSXt4+0yvM5IE/XjUa32JwtKZ83I+yrcjn6+uy3w0dedptkbzvKh12Vfc35WI9NwCWaV7Ja/VHt8dthMrNvKo15h3VeiQbEJNOa/dAbSeQEuzCSn7/qMiG1C99lqIUv4Aa8JfolU1oX7KlNzGgBAACEw0iICzh7ABNYNpG7vj/B8QALxS0nnjTLkCzsgy+7aqHFAoYEI7VVDZvYYd+7Mw1NO1M6U+cpyGNhLg+Oaavt+EaOxfDQXmWm2yIfXXrzUjxQSCzVZ9AZaB0pe/oOjqFanUe8trVvTaHMm4krOduA18auzBZ3nk6CadyOgiouevBajfNkJaoafmbPTSuz+hFwpdyrYbANl9+QoR6WRKS/XFVUsYzi5th0z/Iy7FkQu7dmZKO1e4KXvdJn0C9FWtWNFrQdZf4qHChFZbXL8dCHBktIMQGyhycyg+qUm0O6XcsLZAhr5Hnxfj435DVBIoBFFQfkwOaUwZ24//qXqks+XWORKah34NR21aIBJsWyyFLixPR/sP1nAaxWnrdG50ycvK9mV4iYwB/Ay+H/nRfMKJN559FWT+pVLFXioMiqsl3KA1hE83dNQAENIFzX2y2sjt97vCVhZaDXumpVBKL9NXBm0IROwS7dbGr7afBgX09dfCuy7+Sm";
+  // puts(b64quote); 
+
+   char* sign_file = "/home/ubuntu/projects/cplan/certs/AttestationReportSigningCACert.pem";
+   char* cert = "/home/ubuntu/projects/cplan/certs/client.crt";
+   char* key="/home/ubuntu/projects/cplan/certs/client.key";
+   
+
+     
+    if(sgx_boinc_sp_call_remote_attestation("3415A239C3B68EF66EAD98B1A2D01E2A", sign_file, cert, key, b64quote, 0)== 0){
+         printf("\n -------call_remote_attestation success\n\n");
+         return 0;
+    }else{
+        printf("\n --------call_remote_attestation failed \n\n"); 
+         return 1;
+    }
+
+    
+     
     return 0;
 }
+
 
 int compare_results(
     RESULT & /*r1*/, void* data1,

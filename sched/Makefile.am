@@ -260,9 +260,15 @@ script_validator_SOURCES = $(VALIDATOR_SOURCES) \
 	script_validator.cpp
 script_validator_LDADD = $(SERVERLIBS)
 
-sgx_validator_SOURCES = $(VALIDATOR_SOURCES) \
+SGX_VALIDATOR_SOURCES = \
+        credit.cpp \
+        sgx_base_validator.cpp \
+        validate_util.cpp \
+        sgx_validate_util2.cpp
+
+sgx_validator_SOURCES = $(SGX_VALIDATOR_SOURCES) \
         sgx_validator.cpp
-sgx_validator_LDADD = $(SERVERLIBS)
+sgx_validator_LDADD = $(SERVERLIBS) /home/ubuntu/sgx_boinc_sp.a  -lcrypto -lcurl  
 
 db_dump_SOURCES = db_dump.cpp
 db_dump_LDADD = $(SERVERLIBS)
