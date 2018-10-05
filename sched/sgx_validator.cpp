@@ -34,6 +34,8 @@
 #include "validate_util2.h"
 #include "validator.h"
 #include "md5_file.h"
+#include <openssl/sha.h>
+#include "sgx_quote.h"
 
 using std::string;
 using std::vector;
@@ -119,41 +121,72 @@ int init_result(RESULT& result, void*& data) {
     return 0;
 }
 
+void sha256(char *string, int len, unsigned char outputBuffer[65])
+{
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, string, len);
+    SHA256_Final(outputBuffer, &sha256);
+}
+
 int sgx_remote_check(string file_path){
-    char b64quote[2000];
+    int file_size = 0;
+    char* b64quote = NULL;
+    char* result_content = NULL;
+
     FILE* fp = fopen(file_path.c_str(), "r");
-    fgets(b64quote, sizeof(b64quote), fp);
-    fclose(fp);
-    if(strlen(b64quote) <  1488) {
-      printf("\n--------------- error quote length is %d which 1488 is expected \n", strlen(b64quote));
-      return 1;
-     }else{
-       printf("\n---------quote length is %d which 1488 is expected \n", strlen(b64quote));
-     }
-
-
-    b64quote[1488]=0;
-    //puts(b64quote);
-    
-      char* b64quote2= "AgAAAPoKAAAHAAYAAAAAADQVojnDto72bq2YsaLQHirmCGrHHUmt08LRyclZLFf4BQX///8CAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAHAAAAAAAAANS16kwG2tk/a775pT+YR9M1jfxd7JqjZ6CsEnnxTndXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC9ccY4Dvd8VBfostHOLUtlBLn0GOUEk0JEDP/yRD2VvQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABW9NIXvpRCgapTzL9gPMPLuYxzsRSEUILnCewQjBGaOQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAqAIAAJqZc9uf1h8OXxrqr5PowV75nnZwscUgFZzLf9B3mUADpGICH2nYuXk3zd2TzKoSe6/XPRoKMQJh1YZ5n4tdNLPlJeKJwNz7l4CB/xvqdFFs03lqtgdc+eHTqvBjYmPX1XPhaVoxi2U3YoAYUPVp0hP+F1/pHiG8ItXnqKbkgpgRS5nCRCFfGE8M/ASHoJaY8PyHGBj6mqbbDTkEyRpAvSDcEntBcs5wOaWt/oTeQsg5yRdBg09v9hS1TNdfQnpUnsSXt4+0yvM5IE/XjUa32JwtKZ83I+yrcjn6+uy3w0dedptkbzvKh12Vfc35WI9NwCWaV7Ja/VHt8dthMrNvKo15h3VeiQbEJNOa/dAbSeQEuzCSn7/qMiG1C99lqIUv4Aa8JfolU1oX7KlNzGgBAACEw0iICzh7ABNYNpG7vj/B8QALxS0nnjTLkCzsgy+7aqHFAoYEI7VVDZvYYd+7Mw1NO1M6U+cpyGNhLg+Oaavt+EaOxfDQXmWm2yIfXXrzUjxQSCzVZ9AZaB0pe/oOjqFanUe8trVvTaHMm4krOduA18auzBZ3nk6CadyOgiouevBajfNkJaoafmbPTSuz+hFwpdyrYbANl9+QoR6WRKS/XFVUsYzi5th0z/Iy7FkQu7dmZKO1e4KXvdJn0C9FWtWNFrQdZf4qHChFZbXL8dCHBktIMQGyhycyg+qUm0O6XcsLZAhr5Hnxfj435DVBIoBFFQfkwOaUwZ24//qXqks+XWORKah34NR21aIBJsWyyFLixPR/sP1nAaxWnrdG50ycvK9mV4iYwB/Ay+H/nRfMKJN559FWT+pVLFXioMiqsl3KA1hE83dNQAENIFzX2y2sjt97vCVhZaDXumpVBKL9NXBm0IROwS7dbGr7afBgX09dfCuy7+Sm";
-  // puts(b64quote); 
-
-   char* sign_file = "/home/ubuntu/projects/cplan/certs/AttestationReportSigningCACert.pem";
-   char* cert = "/home/ubuntu/projects/cplan/certs/client.crt";
-   char* key="/home/ubuntu/projects/cplan/certs/client.key";
-   
-
-     
-    if(sgx_boinc_sp_call_remote_attestation("3415A239C3B68EF66EAD98B1A2D01E2A", sign_file, cert, key, b64quote, 0)== 0){
-         printf("\n -------call_remote_attestation success\n\n");
-         return 0;
-    }else{
-        printf("\n --------call_remote_attestation failed \n\n"); 
+    if( fp == NULL )  {
+         printf("fail to open file:%s\n", file_path.c_str());
          return 1;
     }
 
+    fseek(fp, 0L, SEEK_END);
+    file_size = ftell(fp);
+    b64quote = new char[file_size + 1];
+    memset(b64quote, 0, file_size + 1);
+
+    fseek(fp, 0L, SEEK_SET);
+    fread(b64quote, file_size, 1, fp); 
+    result_content = strchr(b64quote, '\n');
+    
+    int len = result_content - b64quote;
+
+    b64quote[file_size] = 0;
+    *result_content = 0;
+    result_content = result_content + 1;
+
+    fclose(fp);
+
+    unsigned char sha256hash[33];
+    memset(sha256hash, 0, 33);
+    sha256(result_content, file_size-len-1, sha256hash);
+
+    if (memcmp(sha256hash, ((sgx_quote_t*)b64quote)->report_body.report_data.d, 32) != 0) {
+        printf("hashes do not match.");
+        delete[] b64quote;
+        return -1;
+    }
+
+    /* for test */
+    //char* b64quote2= "AgAAAPoKAAAHAAYAAAAAADQVojnDto72bq2YsaLQHirmCGrHHUmt08LRyclZLFf4BQX///8CAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAHAAAAAAAAANS16kwG2tk/a775pT+YR9M1jfxd7JqjZ6CsEnnxTndXAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC9ccY4Dvd8VBfostHOLUtlBLn0GOUEk0JEDP/yRD2VvQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABW9NIXvpRCgapTzL9gPMPLuYxzsRSEUILnCewQjBGaOQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAqAIAAJqZc9uf1h8OXxrqr5PowV75nnZwscUgFZzLf9B3mUADpGICH2nYuXk3zd2TzKoSe6/XPRoKMQJh1YZ5n4tdNLPlJeKJwNz7l4CB/xvqdFFs03lqtgdc+eHTqvBjYmPX1XPhaVoxi2U3YoAYUPVp0hP+F1/pHiG8ItXnqKbkgpgRS5nCRCFfGE8M/ASHoJaY8PyHGBj6mqbbDTkEyRpAvSDcEntBcs5wOaWt/oTeQsg5yRdBg09v9hS1TNdfQnpUnsSXt4+0yvM5IE/XjUa32JwtKZ83I+yrcjn6+uy3w0dedptkbzvKh12Vfc35WI9NwCWaV7Ja/VHt8dthMrNvKo15h3VeiQbEJNOa/dAbSeQEuzCSn7/qMiG1C99lqIUv4Aa8JfolU1oX7KlNzGgBAACEw0iICzh7ABNYNpG7vj/B8QALxS0nnjTLkCzsgy+7aqHFAoYEI7VVDZvYYd+7Mw1NO1M6U+cpyGNhLg+Oaavt+EaOxfDQXmWm2yIfXXrzUjxQSCzVZ9AZaB0pe/oOjqFanUe8trVvTaHMm4krOduA18auzBZ3nk6CadyOgiouevBajfNkJaoafmbPTSuz+hFwpdyrYbANl9+QoR6WRKS/XFVUsYzi5th0z/Iy7FkQu7dmZKO1e4KXvdJn0C9FWtWNFrQdZf4qHChFZbXL8dCHBktIMQGyhycyg+qUm0O6XcsLZAhr5Hnxfj435DVBIoBFFQfkwOaUwZ24//qXqks+XWORKah34NR21aIBJsWyyFLixPR/sP1nAaxWnrdG50ycvK9mV4iYwB/Ay+H/nRfMKJN559FWT+pVLFXioMiqsl3KA1hE83dNQAENIFzX2y2sjt97vCVhZaDXumpVBKL9NXBm0IROwS7dbGr7afBgX09dfCuy7+Sm";
+    //char* sign_file = "./AttestationReportSigningCACert.pem";
+    //char* cert = "./client.crt";
+    //char* key="./client.key";
+
+    char* sign_file = "/home/ubuntu/projects/cplan/certs/AttestationReportSigningCACert.pem";
+    char* cert = "/home/ubuntu/projects/cplan/certs/client.crt";
+    char* key="/home/ubuntu/projects/cplan/certs/client.key";
     
      
+    if(sgx_boinc_sp_call_remote_attestation("3415A239C3B68EF66EAD98B1A2D01E2A", sign_file, cert, key, b64quote, 0)== 0){
+         printf("\n -------call_remote_attestation success\n\n");
+    }else{
+         printf("\n --------call_remote_attestation failed \n\n"); 
+         delete[] b64quote;
+         return 1;
+    }
+     
+    delete[] b64quote;
     return 0;
 }
 
