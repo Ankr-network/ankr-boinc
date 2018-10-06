@@ -26,7 +26,7 @@
 // (it has stuff like a timestamp and OS code that can differ
 // even if the archive contents are the same)
 
-#include "config.h"
+//#include "config.h"
 #include "util.h"
 #include "sched_util.h"
 #include "sched_msgs.h"
@@ -36,6 +36,7 @@
 #include "md5_file.h"
 #include <openssl/sha.h>
 #include "sgx_quote.h"
+#include "base64.h"
 
 using std::string;
 using std::vector;
@@ -161,8 +162,9 @@ int sgx_remote_check(string file_path){
     memset(sha256hash, 0, 33);
     sha256(result_content, file_size-len-1, sha256hash);
 
-    if (memcmp(sha256hash, ((sgx_quote_t*)b64quote)->report_body.report_data.d, 32) != 0) {
-        printf("hashes do not match.");
+    string origquote = r_base64_decode(b64quote, len);
+    if (strncmp((char*)sha256hash, (char*)((sgx_quote_t*)(origquote.c_str()))->report_body.report_data.d, 16) != 0) {
+        printf("hashes do not match.\n");
         delete[] b64quote;
         return -1;
     }
