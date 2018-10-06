@@ -818,7 +818,7 @@ static void parse_cpuinfo_linux(HOST_INFO& host) {
 #endif
     if (strlen(features)) {
         safe_strcpy(host.p_features, features);
-        safe_strcat(host.p_features, (get_sgx_support() & SGX_SUPPORT_ENABLED) ? " sgx":" non-sgx");
+        safe_strcat(host.p_features, (get_sgx_support() & SGX_SUPPORT_ENABLED) ? " sgx":"");
     }
     
     safe_strcpy(host.p_model, model_buf);
