@@ -163,7 +163,7 @@ int sgx_remote_check(string file_path){
     sha256(result_content, file_size-len-1, sha256hash);
 
     string origquote = r_base64_decode(b64quote, len);
-    if (strncmp((char*)sha256hash, (char*)((sgx_quote_t*)(origquote.c_str()))->report_body.report_data.d, 16) != 0) {
+    if (strncmp((char*)sha256hash, (char*)((sgx_quote_t*)(origquote.c_str()))->report_body.report_data.d, 32) != 0) {
         printf("hashes do not match.\n");
         delete[] b64quote;
         return -1;
