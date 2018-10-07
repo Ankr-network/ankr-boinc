@@ -29,15 +29,15 @@ After compiling the SGX tasks, it should be added to boinc server side and follo
 
 For example, it can be added to 
 
-    ** myproject/apps/myapp/1.0/x86_64-pc-linux-gnu/ **
+     myproject/apps/myapp/1.0/x86_64-pc-linux-gnu/ 
 
 The version.xml file should be added this directory as usual.
 
 It will be something like this,
 
- <version>
+    <version>
 
-   <file>
+    <file>
 
       <physical_name>pouw_1.0_x86_64-pc-linux-gnu</physical_name>
 
@@ -57,7 +57,7 @@ It will be something like this,
 
     </file>
 
-  </version>
+    </version>
 
 ## Configure the validator
 In config.xml, you need to add your own validator as below. This validator will validate the result and quote. 
@@ -123,7 +123,8 @@ For advanced developer, you can link the boinc libraries to your own app. You al
 
 You can add libboinc_api.a  and libboinc.a, and specify the header with -I${BOINC_ROOT}, -I${BOINC_ROOT}/api, -I${BOINC_ROOT}/lib
 
-##RA certificates
+## RA certificates
+
 For Remote attestation, the following info should be configured,
 
 1. SPID
