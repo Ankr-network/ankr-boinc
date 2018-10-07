@@ -2,21 +2,25 @@
 
 This a sgx application for boinc server. This document will focus on SGX task and and remote attestation. In current folder, it's a validator for sgx app, and in proteinfolding folder it's the sgx app which will be run in boinc client. The boinc client will report the computing result back to boinc server and sgx_validator will validate the result.
 The sgx_validator will do two validations,
-1. check the computing result sha256 hash as expected.
+1. check the computing result sha256 hash to verify if it's as expected.
 1. connect Intel ISA server to validator the computing from trusted enclave.
 
 Therefore, this document is assuming you already have a working boinc server, and is assuming you already knew how to configure a traditional boinc server.
 
 ## How to build
 To build validator,
-./run.sh
+
+$./run.sh
 
 The executible sgx_validator should be used as validator for such sgx app which is configure in config.xml.
 
 To build proteinfolding,
-cd proteinfolding
-cmake .
-make
+
+$cd proteinfolding
+
+$cmake .
+
+$make
 
 The executible pouw and protein.signed.so will be used in verison.xml and pouw is the main program.
 
@@ -25,13 +29,13 @@ After compiling the SGX tasks, it should be added to boinc server side and follo
 
 For example, it can be added to 
 
-    **myproject/apps/myapp/1.0/x86_64-pc-linux-gnu/**
+    ** myproject/apps/myapp/1.0/x86_64-pc-linux-gnu/ **
 
 The version.xml file should be added this directory as usual.
 
 It will be something like this,
 
-<version>
+ <version>
 
    <file>
 
@@ -53,7 +57,7 @@ It will be something like this,
 
     </file>
 
-</version>
+  </version>
 
 ## Configure the validator
 In config.xml, you need to add your own validator as below. This validator will validate the result and quote. 
@@ -67,7 +71,7 @@ In config.xml, you need to add your own validator as below. This validator will 
 ## Configure the input and output file
 you need to configure your input and outout file. In input file, you need to add your command parameters.
 
-<input_template>
+  <input_template>
 
     <file_info>
 
@@ -91,7 +95,7 @@ you need to configure your input and outout file. In input file, you need to add
 
     </workunit>
 
-</input_template>
+  </input_template>
 
 
 In command_line, you can add your parameters. and copy_file tag can be added if you don't want to handle symbolic link in your app.
@@ -110,11 +114,13 @@ The sgx app is similar with regular sgx apps, the following is the difference.
 1. SGX MODE should be HW.
 1. The quote should be generated after the workunit computing.
 1. The quote should write to the beginning of the output file. As a result, the first line is the quote, and the rest lines are other output.
+
 As usual, the sgx app should link boinc library and add boinc_init(), resolve_name(), boinc_finish() kind of functions. It follows the tradition of all old boinc applications. 
 
 The simple way is you can follow the sample application in boinc and compile the code under the boinc and use the same makefile(minor change for your file names). It will handle all the details for you, and then you can easily compile and link your sgx application.
 
 For advanced developer, you can link the boinc libraries to your own app. You also need to include the all the header files of boinc.
+
 You can add libboinc_api.a  and libboinc.a, and specify the header with -I${BOINC_ROOT}, -I${BOINC_ROOT}/api, -I${BOINC_ROOT}/lib
 
 ##RA certificates
