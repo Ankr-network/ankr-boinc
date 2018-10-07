@@ -1,6 +1,6 @@
 # Build a boinc sgx app
 
-This a sgx application for boinc server. This document will focus on SGX task and and remote attestation. In current folder, it's a validator for sgx app, and in proteinfolding folder it's the sgx app which will be run in boinc client. The boinc client will report the computing result back to boinc server and sgx_validator will validate the result.
+This is a sgx application for boinc server. This document will focus on SGX task and and remote attestation. In current folder, it's a validator for sgx app, and in proteinfolding folder it's the sgx app which will be run in boinc client. The boinc client will report the computing result back to boinc server and sgx_validator will validate the result.
 The sgx_validator will do two validations,
 1. check the computing result sha256 hash to verify if it's as expected.
 1. connect Intel ISA server to validator the computing from trusted enclave.
@@ -133,7 +133,7 @@ For Remote attestation, the following info should be configured,
 1. Attestation Report Signing CA certificate
 The user should register his certificate in Intel with following link,
 
-**https://software.intel.com/en-us/form/sgx-onboarding**
+     **https://software.intel.com/en-us/form/sgx-onboarding**
 
 Then the user can get SPID, and Attestation Report Signing CA certificate. Please refer to Intel Remote Attestation document for details. The basic concepts about RA is not focus of this document. 
 
