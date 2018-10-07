@@ -19,28 +19,29 @@ example of boinc SGX application
 ## How to build (Ubuntu) 
 1. To build sgx_boinc_sp.a  
 (source : https://github.com/intel/sgx-ra-sample) 
-$cd intel_sgx_library 
-$apt-get install libcurl4-openssl-dev 
 
-$ wget https://www.openssl.org/source/openssl-1.1.0i.tar.gz 
-$ tar xf openssl-1.1.0i.tar.gz 
-$ cd openssl-1.1.0i 
-$ ./config --prefix=/opt/openssl/1.1.0i --openssldir=/opt/openssl/1.1.0i 
-$ make 
-$ sudo make install 
+ $cd intel_sgx_library 
+ $apt-get install libcurl4-openssl-dev 
+
+ $ wget https://www.openssl.org/source/openssl-1.1.0i.tar.gz     
+ $ tar xf openssl-1.1.0i.tar.gz    
+ $ cd openssl-1.1.0i     
+ $ ./config --prefix=/opt/openssl/1.1.0i --openssldir=/opt/openssl/1.1.0i    
+ $ make    
+ $ sudo make install     
  
-$ ./bootstrap 
-$ ./configure --with-openssldir=/opt/openssl/1.1.0i 
-$ make 
+ $ ./bootstrap    
+ $ ./configure --with-openssldir=/opt/openssl/1.1.0i     
+ $ make    
   
 build and test library(sgx_boinc_sp.a): 
-$./run.sh 
+ $./run.sh    
  
  
-2. To build validator,  
-$cd sgx_validator
-$export LD_LIBRARY_PATH=/opt/openssl/1.1.0i/lib 
-$$./run.sh 
+2. To build validator,     
+ $cd sgx_validator   
+ $export LD_LIBRARY_PATH=/opt/openssl/1.1.0i/lib     
+ $$./run.sh    
  
 The executible sgx_validator should be used as validator for such sgx app which is configure in config.xml. 
 
