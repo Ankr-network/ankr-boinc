@@ -20,7 +20,7 @@ example of boinc SGX application
 1. To build sgx_boinc_sp.a  
 (source : https://github.com/intel/sgx-ra-sample) 
 
- $cd intel_sgx_library 
+ $cd intel_sgx_library     
  $apt-get install libcurl4-openssl-dev 
 
  $ wget https://www.openssl.org/source/openssl-1.1.0i.tar.gz     
@@ -38,10 +38,11 @@ build and test library(sgx_boinc_sp.a):
  $./run.sh    
  
  
-2. To build validator,     
+2. To build validator,  
+
  $cd sgx_validator   
  $export LD_LIBRARY_PATH=/opt/openssl/1.1.0i/lib     
- $$./run.sh    
+ $./run.sh    
  
 The executible sgx_validator should be used as validator for such sgx app which is configure in config.xml. 
 
