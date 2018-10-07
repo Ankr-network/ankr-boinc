@@ -1,0 +1,2 @@
+g++ -std=c++11  -g  -L/opt/intel/sgxsdk/lib64 -L/opt/openssl/1.1.0i/lib   -o get_quote sgx_quote.cpp sgx_detect_linux.o sgx_stub.o quote_size.o byteorder.o common.o crypto.o hexutil.o fileio.o base64.o msgio.o logfile.o Enclave_u.o -lsgx_urts -lsgx_ukey_exchange -lsgx_uae_service -lcrypto -l:libsgx_capable.a -lpthread -ldl  -I/opt/intel/sgxsdk/include 
+./get_quote  -s 3415A239C3B68EF66EAD98B1A2D01E2A -r -v -d -q
