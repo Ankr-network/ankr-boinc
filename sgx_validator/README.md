@@ -1,35 +1,72 @@
 # Build a boinc sgx app
 
-This is a sgx application for boinc server. This document will focus on SGX task and and remote attestation. In current folder, it's a validator for sgx app, and in proteinfolding folder it's the sgx app which will be run in boinc client. The boinc client will report the computing result back to boinc server and sgx_validator will validate the result.
+This is a SGX application for boinc server. This document will focus on SGX task and and remote attestation. In current folder, it's a validator for sgx app, and in proteinfolding folder it's the sgx app which will be run in boinc client. The boinc client will report the computing result back to boinc server and sgx_validator will validate the result.
 The sgx_validator will do two validations,
 1. check the computing result sha256 hash to verify if it's as expected.
 1. connect Intel ISA server to validator the computing from trusted enclave.
 
 Therefore, this document is assuming you already have a working boinc server, and is assuming you already knew how to configure a traditional boinc server.
 
-## How to build
-To build validator,
+## source code describe  
+all the new source code is in (boinc_root)/sgx_validator/ directory  
+1. sgx_validator 
+source code for sgx_valibator 
+2. intel_sgx_library 
+source code for intel remote attestation library (sgx_boinc_sp.a) which is used by sgx_validator 
+3. proteinfolding 
+example of boinc SGX application   
 
-$./run.sh
+## How to build (Ubuntu) 
+1. To build sgx_boinc_sp.a  
+(source : https://github.com/intel/sgx-ra-sample) 
+$cd intel_sgx_library 
+$apt-get install libcurl4-openssl-dev 
 
-The executible sgx_validator should be used as validator for such sgx app which is configure in config.xml.
+$ wget https://www.openssl.org/source/openssl-1.1.0i.tar.gz 
+$ tar xf openssl-1.1.0i.tar.gz 
+$ cd openssl-1.1.0i 
+$ ./config --prefix=/opt/openssl/1.1.0i --openssldir=/opt/openssl/1.1.0i 
+$ make 
+$ sudo make install 
+ 
+$ ./bootstrap 
+$ ./configure --with-openssldir=/opt/openssl/1.1.0i 
+$ make 
+  
+build and test library(sgx_boinc_sp.a): 
+$./run.sh 
+ 
+ 
+2. To build validator,  
+$cd sgx_validator
+$export LD_LIBRARY_PATH=/opt/openssl/1.1.0i/lib 
+$$./run.sh 
+ 
+The executible sgx_validator should be used as validator for such sgx app which is configure in config.xml. 
 
-To build proteinfolding,
+3. To build proteinfolding, 
 
-$cd proteinfolding
+$cd proteinfolding 
 
 $cmake .
 
 $make
 
-The executible pouw and protein.signed.so will be used in verison.xml and pouw is the main program.
+The executible pouw and protein.signed.so will be used in verison.xml and pouw is the main program. 
 
 ## Configure boinc server
-After compiling the SGX tasks, it should be added to boinc server side and follow the tradition of boinc server. 
+After compiling the SGX tasks, it should be added to boinc server side and follow the tradition of boinc server.  
 
-For example, it can be added to 
+1.add application to project.xml 
+  <app> 
+    <name>pouw</name> 
+    <user_friendly_name>pouw</user_friendly_name> 
+  </app> 
+ 
+2. add version application to boinc server 
+For example, it can be added to  
 
-     myproject/apps/myapp/1.0/x86_64-pc-linux-gnu/ 
+     myproject/apps/myapp/1.0/x86_64-pc-linux-gnu/  
 
 The version.xml file should be added this directory as usual.
 
@@ -58,8 +95,19 @@ It will be something like this,
     </file>
 
     </version>
+    
+    
+    
+## Update the database 
+Then you can run './bin/xadd' and './bin/update_version' to save everything in your mysql database. 
 
-## Configure the validator
+Lastly, you need to run './bin/stop' and './bin/start' to start your validator which is configured in config.xml as usual.
+
+The validator will contact Intel Remote Attestation Service to do validation for boinc client computing result. 
+
+
+## Configure the validator 
+add sgx_validator run parameters to config.xml 
 In config.xml, you need to add your own validator as below. This validator will validate the result and quote. 
 
     <daemon>
@@ -68,9 +116,19 @@ In config.xml, you need to add your own validator as below. This validator will 
 
     </daemon>
 
+Tips: to test the setting, run sgx_validator: 
+export LD_LIBRARY_PATH=/opt/openssl/1.1.0i/lib  
+./bin/sgx_validator --app myapp --spid --sign_file ./AttestationSigningCA.pem --cert client.crt --key client.key    
+ We provide test cert files in (boinc_root)/sgx_validator/intel_sgx_library/certs/certs   
+
+    
+## start the sgx_validator
+export LD_LIBRARY_PATH=/opt/openssl/1.1.0i/lib 
+./bin/stop 
+./bin/start 
+
 ## Configure the input and output file
 you need to configure your input and outout file. In input file, you need to add your command parameters.
-
   <input_template>
 
     <file_info>
@@ -100,12 +158,16 @@ you need to configure your input and outout file. In input file, you need to add
 
 In command_line, you can add your parameters. and copy_file tag can be added if you don't want to handle symbolic link in your app.
 
-## Update the database
-Then you can run './bin/xadd' and './bin/update_version' to save everything in your mysql database. 
+Tips:  the path of enclave should be specially assigned, for example  --enclave ../../projects/127.0.0.1_cplann/protein.signed.so
+if the path sets improperly, the applicaiton will end unexpectedly, the absent of output file will show at boinc client.
 
-Lastly, you need to run './bin/stop' and './bin/start' to start your validator which is configured in config.xml as usual.
+## add workunit & test on boinc client 
+$./bin/stage_file --copy in
+$./bin/create_work -appname ss  -wu_template  protein_in  -result_template templates/example_app_out in  -min_quorum 1  -target_nresults 1
 
-The validator will contact Intel Remote Attestation Service to do validation for boinc client computing result. 
+boinc client loads the job(workunit), it takes around 30 seconds to finish the example sgx application. 
+After the output files submit to boinc server. sgx_validator will validate the result by call intel remote attesation. 
+
 
 ## Write your own sgx app
 This is an example for proteinfolding, and you can write your own sgx app.
