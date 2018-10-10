@@ -65,9 +65,28 @@ std::string base64_encode(unsigned char const* bytes_to_encode, unsigned int in_
 
 }
 
+int exists(const char *fname)
+{
+    FILE *file;
+    if ((file = fopen(fname, "r")))
+    {
+        fclose(file);
+        return 1;
+    }
+    return 0;
+}
+
 int main(int argc, char const *argv[]) {
+    string enclave_path;
+    enclave_path = "enclave.signed.so";
+    if (!exists(enclave_path.c_str())) {
+        cerr << enclave_path << " is not a file" << endl;
+    }
+
     boinc_init();
-    if (initialize_enclave(&global_eid, "enclave.token", "enclave.signed.so") < 0) {
+    char e_path[512];
+    boinc_resolve_filename(enclave_path.c_str(), e_path, sizeof(e_path));
+    if (initialize_enclave(e_path, &global_eid) != 0) {
         std::cout << "Fail to initialize enclave." << std::endl;
         return 1;
     }
@@ -83,18 +102,14 @@ int main(int argc, char const *argv[]) {
         return -1;
     }
 
-    int ptr;
     int num = 0;
     char enclave_output[4096] = {0};
-    sgx_status_t status = addOne(global_eid, &ptr, &num, 
+    sgx_status_t status = addOne(global_eid, &ret, &num, 
                               &quote_enc_info, &report,
                               enclave_output, 4096);
     if (status != SGX_SUCCESS) {
-        std::cout << "FAILURE!!!" << std::endl;
+        std::cout << "FAILURE!!!" << status << std::endl;
     }
-    printf("Successful using addOne function.\n");
-    printf("The return number should be 1.\n");
-    printf("And ours is %d\n", ptr);
 
     sgx_spid_t spid;
     memcpy(spid.id, SPID_FANZ, 16);
@@ -125,6 +140,7 @@ int main(int argc, char const *argv[]) {
     outputfile << ostr;
     outputfile.close();
  
+    printf("The quote and computing result is saved to out file.\n");
     boinc_finish(0);
 
     if(SGX_SUCCESS != sgx_destroy_enclave(global_eid))
