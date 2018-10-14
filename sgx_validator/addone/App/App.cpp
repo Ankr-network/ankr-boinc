@@ -103,6 +103,22 @@ int main(int argc, char const *argv[]) {
     }
 
     int num = 0;
+    char input_path[512] = {0};
+    char inputfromfile[100] = {0};
+    boinc_resolve_filename("in", input_path, sizeof(input_path));
+    FILE* infile = boinc_fopen(input_path, "r");
+    if (!infile) {
+        fprintf(stderr,
+            "Couldn't find input file, resolved name %s.\n", input_path
+        );
+        exit(-1);
+    }
+    fgets(inputfromfile, sizeof(inputfromfile) , infile);
+    ret = sscanf(inputfromfile, "%d", &num);
+    if (ret == EOF) {
+        num = 0;
+    }
+
     char enclave_output[4096] = {0};
     sgx_status_t status = addOne(global_eid, &ret, &num, 
                               &quote_enc_info, &report,
