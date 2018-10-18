@@ -164,8 +164,8 @@ bool CBOINCGUIApp::OnInit() {
     }
 
     // Setup application and company information
-    SetAppName(wxT("BOINC Manager"));
-    SetVendorName(wxT("Space Sciences Laboratory, U.C. Berkeley"));
+    SetAppName(wxT("Ankr Distributed Computing"));
+    SetVendorName(wxT("Ankr Network, San Francisco"));
 
 #ifdef __WXMAC__
     char displayName[MAXPATHLEN];
@@ -381,8 +381,8 @@ bool CBOINCGUIApp::OnInit() {
     if (wxFile::Exists(strRebootPendingFile)) {
         wxMessageDialog dialog(
             NULL,
-            _("A reboot is required in order for BOINC to run properly.\nPlease reboot your computer and try again."),
-            _("BOINC Manager"),
+            _("A reboot is required in order for Ankr to run properly.\nPlease reboot your computer and try again."),
+            _("Ankr Distributed Computing"),
             wxOK|wxICON_ERROR
         );
 
@@ -595,7 +595,7 @@ void CBOINCGUIApp::SaveState() {
 ///
 void CBOINCGUIApp::OnInitCmdLine(wxCmdLineParser &parser) {
     wxApp::OnInitCmdLine(parser);
-    parser.AddSwitch("a", "autostart", _("BOINC Manager was started by the operating system automatically"));
+    parser.AddSwitch("a", "autostart", _("Ankr Distributed Computing was started by the operating system automatically"));
 #if defined(__WXMSW__) || defined(__WXMAC__)
     parser.AddSwitch("s", "systray", _("Startup BOINC so only the system tray icon is visible"));
 #else
@@ -605,10 +605,10 @@ void CBOINCGUIApp::OnInitCmdLine(wxCmdLineParser &parser) {
     parser.AddOption("n", "namehost", _("Host name or IP address"));
     parser.AddOption("g", "gui_rpc_port", _("GUI RPC port number"));
     parser.AddOption("p", "password", _("Password"));
-    parser.AddOption("b", "boincargs", _("Startup BOINC with these optional arguments"));
-    parser.AddSwitch("i","insecure", _("disable BOINC security users and permissions"));
+    parser.AddOption("b", "boincargs", _("Startup Ankr with these optional arguments"));
+    parser.AddSwitch("i","insecure", _("disable Ankr security users and permissions"));
     parser.AddSwitch("c", "checkskins", _("set skin debugging mode to enable skin manager error messages"));
-    parser.AddSwitch("m", "multiple", _("multiple instances of BOINC Manager allowed"));
+    parser.AddSwitch("m", "multiple", _("multiple instances of Ankr Distributed Computing allowed"));
 #if (defined(__WXMAC__) && defined(_DEBUG))
     parser.AddLongOption("NSDocumentRevisionsDebugMode", _("Not used: workaround for bug in XCode 4.2"));
 #endif

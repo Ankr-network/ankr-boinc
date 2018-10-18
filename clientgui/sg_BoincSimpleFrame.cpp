@@ -119,7 +119,7 @@ CSimpleFrame::CSimpleFrame(wxString title, wxIconBundle* icons, wxPoint position
     wxMenu *menuFile = new wxMenu;
 
     strMenuDescription.Printf(
-        _("Close the %s window"), 
+        _("Close the Ankr window"), 
         pSkinAdvanced->GetApplicationName().c_str()
     );
     strMenuName = _("&Close window");
@@ -131,12 +131,12 @@ CSimpleFrame::CSimpleFrame(wxString title, wxIconBundle* icons, wxPoint position
     );
 
     strMenuDescription.Printf(
-        _("Exit %s"),
+        _("Exit Ankr"),
         pSkinAdvanced->GetApplicationName().c_str()
     );
 
     strMenuName.Printf(
-        _("Exit %s"),
+        _("Exit Ankr"),
         pSkinAdvanced->GetApplicationName().c_str()
     );
 
@@ -218,11 +218,11 @@ CSimpleFrame::CSimpleFrame(wxString title, wxIconBundle* icons, wxPoint position
     wxMenu *menuHelp = new wxMenu;
 
     strMenuName.Printf(
-        _("%s &help"), 
+        _("Ankr &help"), 
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     strMenuDescription.Printf(
-        _("Show information about %s"), 
+        _("Show information about Ankr"), 
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     menuHelp->Append(
@@ -232,12 +232,12 @@ CSimpleFrame::CSimpleFrame(wxString title, wxIconBundle* icons, wxPoint position
     );
 
     strMenuName.Printf(
-        _("&%s"), 
-        pSkinAdvanced->GetApplicationName().c_str()
+        _("Ankr help"), 
+        pSkinAdvanced->GetApplicationHelpName().c_str()
     );
     strMenuDescription.Printf(
-        _("Show information about the %s"), 
-        pSkinAdvanced->GetApplicationName().c_str()
+        _("Show information about the Ankr"), 
+        pSkinAdvanced->GetApplicationHelpName().c_str()
     );
     menuHelp->Append(
         ID_HELPBOINCMANAGER,
@@ -246,11 +246,11 @@ CSimpleFrame::CSimpleFrame(wxString title, wxIconBundle* icons, wxPoint position
     );
     menuHelp->AppendSeparator();
     strMenuName.Printf(
-        _("%s &web site"), 
+        _("Ankr website"), 
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     strMenuDescription.Printf(
-        _("Show information about BOINC and %s"),
+        _("Show information about Ankr"),
         pSkinAdvanced->GetApplicationName().c_str()
     );
     menuHelp->Append(
@@ -261,11 +261,11 @@ CSimpleFrame::CSimpleFrame(wxString title, wxIconBundle* icons, wxPoint position
     menuHelp->AppendSeparator();
 
     strMenuName.Printf(
-        _("Check for new %s version"),
+        _("Check for new Ankr version"),
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     strMenuDescription.Printf(
-        _("Check for new %s version"),
+        _("Check for new Ankr version"),
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     menuHelp->Append(
@@ -276,7 +276,7 @@ CSimpleFrame::CSimpleFrame(wxString title, wxIconBundle* icons, wxPoint position
     menuHelp->AppendSeparator();
 
     strMenuName.Printf(
-        _("&About %s..."), 
+        _("&About Ankr..."), 
         pSkinAdvanced->GetApplicationName().c_str()
     );
     menuHelp->Append(
@@ -951,7 +951,7 @@ CSimpleGUIPanel::CSimpleGUIPanel(wxWindow* parent) :
 	buttonsSizer = new wxBoxSizer( wxHORIZONTAL );
 
 	m_NoticesButton = new wxButton( this, ID_SGNOTICESBUTTON, _("Notices"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_NoticesButton->SetToolTip( _("Open a window to view notices from projects or BOINC"));
+    m_NoticesButton->SetToolTip( _("Open a window to view notices from projects or Ankr"));
 	buttonsSizer->Add( m_NoticesButton, 0, wxEXPAND | wxALIGN_LEFT, 0 );
     buttonsSizer->AddStretchSpacer();
 
@@ -972,7 +972,7 @@ CSimpleGUIPanel::CSimpleGUIPanel(wxWindow* parent) :
 	buttonsSizer->Add( m_HelpButton, 0, wxEXPAND | wxALIGN_RIGHT, 0 );
 
     wxString helpTip;
-    helpTip.Printf(_("Get help with %s"), pSkinAdvanced->GetApplicationShortName().c_str());
+    helpTip.Printf(_("Get help with Ankr"), pSkinAdvanced->GetApplicationShortName().c_str());
     m_HelpButton->SetToolTip(helpTip);
 
 	mainSizer->Add( buttonsSizer, 0, wxLEFT | wxRIGHT | wxEXPAND, 2 * SIDEMARGINS );

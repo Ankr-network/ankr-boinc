@@ -22,9 +22,7 @@
 #pragma interface "BOINCBaseView.cpp"
 #endif
 
-#ifndef wxADJUST_MINSIZE
-#define wxADJUST_MINSIZE 0
-#endif
+
 #define DEFAULT_TASK_FLAGS             wxTAB_TRAVERSAL | wxADJUST_MINSIZE | wxFULL_REPAINT_ON_RESIZE
 #define DEFAULT_LIST_FLAGS             wxLC_REPORT | wxLC_VIRTUAL | wxLC_HRULES
 

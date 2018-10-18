@@ -110,13 +110,13 @@ bool CDlgAbout::Create(wxWindow* parent, wxWindowID id, const wxString& caption,
     //
     wxString buf = wxEmptyString;
     buf.Printf(
-        _("About %s"),
+        _("About Ankr"),
         pSkinAdvanced->GetApplicationName().c_str()
     );
     SetTitle(buf);
 
     buf.Printf(
-        _("%s"),
+        _("Ankr"),
         pSkinAdvanced->GetApplicationName().c_str()
     );
     m_AboutBOINCTitleCtrl->SetLabel(buf);
@@ -153,7 +153,7 @@ void CDlgAbout::CreateControls() {
     itemDialog1->SetSizer(itemBoxSizer2);
 
     m_AboutBOINCTitleCtrl = new wxStaticText;
-    m_AboutBOINCTitleCtrl->Create( itemDialog1, wxID_STATIC, _("BOINC Manager"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE );
+    m_AboutBOINCTitleCtrl->Create( itemDialog1, wxID_STATIC, _("Ankr Distributed Computing"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE );
     m_AboutBOINCTitleCtrl->SetFont(wxFont(16, wxDEFAULT, wxNORMAL, wxBOLD, false, _T("")));
     itemBoxSizer2->Add(m_AboutBOINCTitleCtrl, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
@@ -197,7 +197,7 @@ void CDlgAbout::CreateControls() {
 
     wxString buf = wxEmptyString;
     buf.Printf(
-        _("%s is distributed under the GNU Lesser General Public License v3.0."),
+        _("Ankr is distributed under the GNU Lesser General Public License v3.0."),
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
 

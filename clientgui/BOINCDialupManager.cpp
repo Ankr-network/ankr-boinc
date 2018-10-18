@@ -58,7 +58,7 @@ CBOINCDialUpManager::CBOINCDialUpManager() {
     // %s is the application name
     //    i.e. 'BOINC Manager', 'GridRepublic Manager'
     m_strDialogTitle.Printf(
-        _("%s - Network Status"),
+        _("Ankr - Network Status"),
         wxGetApp().GetSkinManager()->GetAdvanced()->GetApplicationName().c_str()
     );
 

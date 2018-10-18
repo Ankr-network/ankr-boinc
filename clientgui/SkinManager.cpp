@@ -476,6 +476,7 @@ void CSkinAdvanced::Clear() {
     m_bIsBranded = false;
     m_strApplicationName = wxEmptyString;
     m_strApplicationShortName = wxEmptyString;
+    m_strApplicationHelpName = wxEmptyString;
     m_iconApplicationIcon.Clear();
     m_iconApplicationDisconnectedIcon.Clear();
     m_iconApplicationSnoozeIcon.Clear();
@@ -501,6 +502,9 @@ int CSkinAdvanced::Parse(MIOFILE& in) {
             continue;
         } else if (parse_str(buf, "<application_short_name>", strBuffer)) {
             m_strApplicationShortName = wxString(strBuffer.c_str(), wxConvUTF8);
+            continue;
+        } else if (parse_str(buf, "<application_help_name>", strBuffer)) {
+            m_strApplicationHelpName = wxString(strBuffer.c_str(), wxConvUTF8);
             continue;
         } else if (match_tag(buf, "<application_icon>")) {
             m_iconApplicationIcon.Parse(in);
@@ -575,6 +579,14 @@ wxString CSkinAdvanced::GetApplicationShortName() {
 }
 
 
+wxString CSkinAdvanced::GetApplicationHelpName() {
+    if (m_strApplicationHelpName.IsEmpty()) {
+        return m_strApplicationName;
+    }
+    return m_strApplicationHelpName;
+}
+
+
 wxIconBundle* CSkinAdvanced::GetApplicationIcon() {
     return m_iconApplicationIcon.GetIcon();
 }
@@ -630,15 +642,20 @@ bool CSkinAdvanced::InitializeDelayedValidation() {
         if (show_error_msgs) {
             fprintf(stderr, "Skin Manager: Application name was not defined. Using default.\n");
         }
-        m_strApplicationName = wxT("BOINC Manager");
+        m_strApplicationName = wxT("Ankr Distributed Computing");
         wxASSERT(!m_strApplicationName.IsEmpty());
     }
     if (m_strApplicationShortName.IsEmpty()) {
         if (show_error_msgs) {
             fprintf(stderr, "Skin Manager: Application short name was not defined. Using default.\n");
         }
-        m_strApplicationShortName = wxT("BOINC");
+        m_strApplicationShortName = wxT("Ankr");
         wxASSERT(!m_strApplicationShortName.IsEmpty());
+    }
+    if (m_strApplicationHelpName.IsEmpty()) {
+        if (show_error_msgs) {
+            fprintf(stderr, "Skin Manager: Application help name was not defined. Using application name.\n");
+        }
     }
 #ifdef _WIN32
     m_iconApplicationIcon.SetDefaults(wxT("application"), wxT("boinc"));
@@ -660,7 +677,7 @@ bool CSkinAdvanced::InitializeDelayedValidation() {
         if (show_error_msgs) {
             fprintf(stderr, "Skin Manager: Organization name was not defined. Using default.\n");
         }
-        m_strOrganizationName = wxT("Space Sciences Laboratory, U.C. Berkeley");
+        m_strOrganizationName = wxT("Ankr Network, San Francisco");
         wxASSERT(!m_strOrganizationName.IsEmpty());
     }
     if (m_strOrganizationWebsite.IsEmpty()) {
@@ -735,7 +752,7 @@ bool CSkinWizardATP::InitializeDelayedValidation() {
         if (show_error_msgs) {
             fprintf(stderr, "Skin Manager: Add project wizard title was not defined. Using default.\n");
         }
-        m_strTitle = wxT("BOINC Manager");
+        m_strTitle = wxT("Ankr Distributed Computing");
         wxASSERT(!m_strTitle.IsEmpty());
     }
     return true;

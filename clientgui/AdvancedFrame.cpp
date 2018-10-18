@@ -345,17 +345,17 @@ bool CAdvancedFrame::CreateMenu() {
     menuFile->Append(
         ID_SELECTCOMPUTER, 
         _("Select computer...\tCtrl+Shift+I"),
-        _("Connect to a BOINC client on another computer")
+        _("Connect to an Ankr client on another computer")
     );
     menuFile->Append(
         ID_SHUTDOWNCORECLIENT, 
         _("Shut down connected client..."),
-        _("Shut down the currently connected BOINC client")
+        _("Shut down the currently connected Ankr client")
     );
     menuFile->AppendSeparator();
 
     strMenuDescription.Printf(
-        _("Close the %s window"), 
+        _("Close the Ankr window"), 
         pSkinAdvanced->GetApplicationName().c_str()
     );
     strMenuName = _("&Close window");
@@ -367,17 +367,17 @@ bool CAdvancedFrame::CreateMenu() {
     );
 
     strMenuDescription.Printf(
-        _("Exit %s"), 
+        _("Exit Ankr"), 
         pSkinAdvanced->GetApplicationName().c_str()
     );
     if (is_boinc_started_by_manager) {
         strMenuName.Printf(
-            _("Exit %s"), 
+            _("Exit Ankr"), 
             pSkinAdvanced->GetApplicationShortName().c_str()
         );
     } else {
         strMenuName.Printf(
-            _("Exit %s"), 
+            _("Exit Ankr"), 
             pSkinAdvanced->GetApplicationName().c_str()
         );
     }
@@ -463,11 +463,11 @@ bool CAdvancedFrame::CreateMenu() {
         );
     } else {
         strMenuName.Printf(
-            _("&Synchronize with %s"), 
+            _("&Synchronize with Ankr"), 
             wxString(ami.acct_mgr_name.c_str(), wxConvUTF8).c_str()
         );
         strMenuDescription.Printf(
-            _("Get current settings from %s"), 
+            _("Get current settings from Ankr"), 
             wxString(ami.acct_mgr_name.c_str(), wxConvUTF8).c_str()
         );
         menuTools->Append(
@@ -481,7 +481,7 @@ bool CAdvancedFrame::CreateMenu() {
             _("Add a project")
         );
         strMenuName.Printf(
-            _("S&top using %s..."), 
+            _("S&top using Ankr..."), 
             wxString(ami.acct_mgr_name.c_str(), wxConvUTF8).c_str()
         );
         menuTools->Append(
@@ -646,11 +646,11 @@ bool CAdvancedFrame::CreateMenu() {
     wxMenu *menuHelp = new wxMenu;
 
     strMenuName.Printf(
-        _("%s &help"), 
+        _("Ankr &help"), 
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     strMenuDescription.Printf(
-        _("Show information about %s"), 
+        _("Show information about Ankr"), 
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     menuHelp->Append(
@@ -660,12 +660,12 @@ bool CAdvancedFrame::CreateMenu() {
     );
 
     strMenuName.Printf(
-        _("&%s help"), 
-        pSkinAdvanced->GetApplicationName().c_str()
+        _("&Ankr help"), 
+        pSkinAdvanced->GetApplicationHelpName().c_str()
     );
     strMenuDescription.Printf(
-        _("Show information about the %s"), 
-        pSkinAdvanced->GetApplicationName().c_str()
+        _("Show information about the Ankr"), 
+        pSkinAdvanced->GetApplicationHelpName().c_str()
     );
     menuHelp->Append(
         ID_HELPBOINCMANAGER,
@@ -675,11 +675,11 @@ bool CAdvancedFrame::CreateMenu() {
     menuHelp->AppendSeparator();
 
     strMenuName.Printf(
-        _("%s &web site"), 
+        _("Ankr &website"), 
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     strMenuDescription.Printf(
-        _("See more information about %s on the web"),
+        _("See more information about Ankr on the web"),
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     menuHelp->Append(
@@ -690,11 +690,11 @@ bool CAdvancedFrame::CreateMenu() {
     menuHelp->AppendSeparator();
 
     strMenuName.Printf(
-        _("Check for new %s version"),
+        _("Check for new Ankr version"),
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     strMenuDescription.Printf(
-        _("Check for new %s version"),
+        _("Check for new Ankr version"),
         pSkinAdvanced->GetApplicationShortName().c_str()
     );
     menuHelp->Append(
@@ -705,7 +705,7 @@ bool CAdvancedFrame::CreateMenu() {
     menuHelp->AppendSeparator();
 
     strMenuName.Printf(
-        _("&About %s..."), 
+        _("&About Ankr..."), 
         pSkinAdvanced->GetApplicationName().c_str()
     );
     menuHelp->Append(
