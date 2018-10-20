@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Edger8r Syntax">
+      <UniqueIdentifier>{ebf2d22e-250f-4d83-9c44-f6fff0ac2d97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Trusted Library">
+      <UniqueIdentifier>{daeddc94-7dc6-4a9c-98ff-9e9e663cb80f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{e392c9e8-4ffa-4fff-92ae-266babb954bb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Enclave_u.c">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="base64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Benchmark.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ocalls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="printf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Enclave_u.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="base64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ocalls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blockchain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pouw_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="printf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="app_ipc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="boinc_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="boinc_win.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cal_boinc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cl_boinc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="coproc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="error_numbers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="filesys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hostinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="miofile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="opencl_boinc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="parse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="prefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="proxy_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="str_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\Enclave\Enclave.edl">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
