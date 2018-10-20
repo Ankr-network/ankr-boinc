@@ -1,0 +1,13 @@
+/* Enclave.edl - Top EDL file. */
+
+enclave {
+    include "sgx_report.h"
+
+    trusted {
+        public int addOne([in] int* num,
+            [in] sgx_target_info_t* quote_enc_info,
+            [out] sgx_report_t* report,
+            [in, out, size=len] char *enclave_output, int len);
+    };
+
+};
