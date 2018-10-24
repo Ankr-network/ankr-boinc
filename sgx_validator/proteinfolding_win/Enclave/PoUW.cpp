@@ -32,7 +32,7 @@ std::string SEQ156 = "0000000000010011111111111001111111111100111111111110011111
 GeneticAlgorithmParams GeneticAlgorithm::params = {
         SEQ150,  // sequence
         50,     // populationSize
-        10,     // generations
+        5,     // generations
         0.10,   // elitePercent
         0.15,   // crossoverPercent
         0.15    // mutationPercent

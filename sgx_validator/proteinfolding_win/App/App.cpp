@@ -343,9 +343,11 @@ int  SGX_CDECL main(int argc, const char *argv[]) {
 	ostr += "\n";
 	ostr += enclave_output;
 
+	printf("base64 quote %d\n", strlen(base64_quote_str.c_str()));
+	printf("enclaveoutput %d\n", strlen(enclave_output));
 	char output_path[512];
 	boinc_resolve_filename("out", output_path, sizeof(output_path));
-	outputfile.open(output_path);
+	outputfile.open(output_path, std::ios::binary);
 	outputfile << ostr;
 	outputfile.close();
 
