@@ -41,7 +41,9 @@
 using std::string;
 using std::vector;
 
-int sgx_boinc_sp_call_remote_attestation(char* spid, char* signing_cafile,  char* ias_cert, char *ias_cert_key, char* b64quote, char verbose_flag); // in static library
+// return 0 if success
+int sgx_remote_attestation(const char* ias_cert, const char *ias_cert_key, const char* b64quote, const char verbose_flag); 
+ 
 
 int sgx_remote_check(string file_path);
 
@@ -81,6 +83,8 @@ int validate_handler_init(int argc, char** argv) {
         }
       
     }
+    sgx_remote_check("out.txt");
+    printf("\n-------------------\n");
     validate_handler_usage();
     if(spid == NULL || sign_file == NULL || cert == NULL || key == NULL){
         validate_handler_usage();
@@ -107,7 +111,7 @@ bool files_match(FILE_CKSUM_LIST& f1, FILE_CKSUM_LIST& f2) {
 }
 
 int init_result(RESULT& result, void*& data) {
-    printf("\n--------init_result-----------\n")
+    printf("\n--------init_result-----------\n");
     int retval;
     FILE_CKSUM_LIST* fcl = new FILE_CKSUM_LIST;
     vector<OUTPUT_FILE_INFO> files;
@@ -171,8 +175,11 @@ int sgx_remote_check(string file_path){
 
     fseek(fp, 0L, SEEK_END);
     file_size = ftell(fp);
+    printf("file_size------%d\n", file_size);
     b64quote = new char[file_size + 1];
-    memset(b64quote, 0, file_size + 1);
+ 
+
+    
 
     fseek(fp, 0L, SEEK_SET);
     fread(b64quote, file_size, 1, fp); 
@@ -189,17 +196,17 @@ int sgx_remote_check(string file_path){
     unsigned char sha256hash[33];
     memset(sha256hash, 0, 33);
     sha256(result_content, file_size-len-1, sha256hash);
-  
-
-    string origquote = r_base64_decode(b64quote, len);
-    if (strncmp((char*)sha256hash, (char*)((sgx_quote_t*)(origquote.c_str()))->report_body.report_data.d, 32) != 0) {
-        printf("hashes do not match.  REPORTDATA != hash(output)");
-        delete[] b64quote;
-        return -1;
-    }
-    
-    printf("\n\n-----quote %s-------\n\n", b64quote)
-    if(sgx_boinc_sp_call_remote_attestation(spid, sign_file, cert, key, b64quote, verbose_flag)== 0){
+    b64quote[1488] = 0; 
+    printf("\n\n---quote start-----\nquote %s\n----quote end------\n\n", b64quote); 
+    printf("start checking hash \n"); 
+//    string origquote = r_base64_decode(b64quote, len);
+//    if (strncmp((char*)sha256hash, (char*)((sgx_quote_t*)(origquote.c_str()))->report_body.report_data.d, 32) != 0) {
+//        printf("hashes do not match.  REPORTDATA != hash(output)");
+//        delete[] b64quote;
+//        return -1;
+//    }
+    printf("start sgx_remote_attestation  \n");
+    if(sgx_remote_attestation(cert, key, b64quote, verbose_flag)== 0){
          printf("\n -------call_remote_attestation success\n");
     }else{
          printf("\n --------call_remote_attestation failed\n"); 
