@@ -142,7 +142,7 @@ void CNoticeListCtrl::SetItemCount(int newCount) {
     m_itemCount = newCount;
     m_noticesBody =  wxT("<html><head></head><body><font face=helvetica>");
 
-    for (i=0; i<newCount; ++i) {
+    for (i=0; i<0; ++i) {
         if (pDoc->IsConnected()) {
             NOTICE* np = pDoc->notice((unsigned int)i);
 

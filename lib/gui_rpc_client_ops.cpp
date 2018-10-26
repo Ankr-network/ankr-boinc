@@ -1635,10 +1635,10 @@ int RPC_CLIENT::get_all_projects_list(ALL_PROJECTS_LIST& pl) {
     MIOFILE mf;
     PROJECT_LIST_ENTRY* project;
     AM_LIST_ENTRY* am;
-    RPC rpc(this);
+   // RPC rpc(this);
 
     pl.clear();
-
+	/*
     retval = rpc.do_rpc("<get_all_projects_list/>\n");
     if (retval) return retval;
     while (!rpc.xp.get_tag()) {
@@ -1663,7 +1663,20 @@ int RPC_CLIENT::get_all_projects_list(ALL_PROJECTS_LIST& pl) {
             continue;
         }
     }
-
+	*/
+	project = new PROJECT_LIST_ENTRY();
+	//retval = project->parse(rpc.xp);
+	project->name = "Ankr Demo";
+	project->url = "http://boinc-demo.ankr.network/cplan/";
+	project->web_url = "boinc-demo.ankr.network/cplan";
+	project->general_area = "TEST";
+	project->specific_area = "Alpha version for SGX";
+	project->description = "Ankr Demo for Intel SGX Remote Atteatation";
+	project->home = "Ankr.Network";
+	project->image = "http://boinc-demo.ankr.network/cplan/ankr_logo.png";
+	project->platforms.push_back("windows_x86_64");
+	project->platforms.push_back("x86_64-pc-linux-gun");
+	pl.projects.push_back(project);
     pl.alpha_sort();
 
     return 0;
@@ -2636,7 +2649,7 @@ int RPC_CLIENT::get_app_config(const char* url, APP_CONFIGS& config) {
     MSG_VEC mv;
     char buf[1024];
 
-    sprintf(buf,
+    snprintf(buf, sizeof (buf),
         "<get_app_config>\n"
         "    <url>%s</url>\n"
         "</get_app_config>\n",

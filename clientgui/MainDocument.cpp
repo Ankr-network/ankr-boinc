@@ -990,6 +990,7 @@ void CMainDocument::RunPeriodicRPCs(int frameRefreshRate) {
 
     // We must keep getting notices even if the Notices Tab is not open
     // so we can notify the user when new notices become available.
+	/*
     ts = dtNow - m_dtNoticesTimeStamp;
     if ((currentTabView & VW_NOTIF) ||
         (ts.GetSeconds() >= NOTICESBACKGROUNDRPC_INTERVAL)) {
@@ -1019,6 +1020,7 @@ void CMainDocument::RunPeriodicRPCs(int frameRefreshRate) {
             RequestRPC(request);
         }
     }
+	*/
 
     ts = dtNow - m_dtCachedStateTimestamp;
     if (ts.GetSeconds() >= STATERPC_INTERVAL) {

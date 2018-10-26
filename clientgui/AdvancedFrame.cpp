@@ -658,7 +658,7 @@ bool CAdvancedFrame::CreateMenu() {
         strMenuName, 
         strMenuDescription
     );
-
+	/*
     strMenuName.Printf(
         _("&Ankr help"), 
         pSkinAdvanced->GetApplicationHelpName().c_str()
@@ -673,7 +673,7 @@ bool CAdvancedFrame::CreateMenu() {
         strMenuDescription
     );
     menuHelp->AppendSeparator();
-
+	*/
     strMenuName.Printf(
         _("Ankr &website"), 
         pSkinAdvanced->GetApplicationShortName().c_str()
