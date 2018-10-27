@@ -15,7 +15,8 @@ source code for sgx_valibator
 example of boinc SGX application   
 
 ## How to build (Ubuntu)
-1. To build validator,   
+1. To build validator,  
+
 a. install  openssl-1.1.0i
 $ wget https://www.openssl.org/source/openssl-1.1.0i.tar.gz
 $ tar xf openssl-1.1.0i.tar.gz  
@@ -24,7 +25,8 @@ $ ./config --prefix=/opt/openssl/1.1.0i --openssldir=/opt/openssl/1.1.0i
 $ make  
 $ sudo make install
 
- b. compile sgx_validator  
+ b. compile sgx_validator   
+  
  $cd sgx_validator   
  $export LD_LIBRARY_PATH=/opt/openssl/1.1.0i/lib    
  $./run.sh    
