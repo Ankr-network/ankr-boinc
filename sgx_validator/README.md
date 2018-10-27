@@ -18,6 +18,8 @@ example of boinc SGX application
 1. To build validator,  
 
 a. install  openssl-1.1.0i
+
+
 $ wget https://www.openssl.org/source/openssl-1.1.0i.tar.gz
 $ tar xf openssl-1.1.0i.tar.gz  
 $ cd openssl-1.1.0i  
@@ -26,7 +28,7 @@ $ make
 $ sudo make install
 
  b. compile sgx_validator   
-  
+
  $cd sgx_validator   
  $export LD_LIBRARY_PATH=/opt/openssl/1.1.0i/lib    
  $./run.sh    
